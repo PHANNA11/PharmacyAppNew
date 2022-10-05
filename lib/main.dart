@@ -16,7 +16,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
-  Bloc.observer = SimpleBlocObserver();
+  //Bloc.observer = SimpleBlocObserver();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -24,33 +24,47 @@ Future<void> main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  // This widget is the root of your application.
-  @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (_) => WishlistBloc()..add(LoadWishList())),
-        BlocProvider(create: (_) => CartBloc()..add(LoadCart())),
-        BlocProvider(
-            create: (_) => CategoryBloc(
-                  categoryRepository: CategoryRepository(),
-                )..add(LoadCategories()))
-      ],
-      child: MaterialApp(
-        //title: 'Our Pharmacy',
-        debugShowCheckedModeBanner: false,
-        onGenerateRoute: AppRouter.onGenerateRoute,
-        initialRoute: SplashScreen.routeName,
-        //home: RegisterScreen(),
-      ),
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      initialRoute: SplashScreen.routeName,
+      onGenerateRoute: AppRouter.onGenerateRoute,
+      home: HomeScreen(),
     );
   }
 }
+
+// class MyApp extends StatefulWidget {
+//   const MyApp({Key? key}) : super(key: key);
+
+//   @override
+//   State<MyApp> createState() => _MyAppState();
+// }
+
+// class _MyAppState extends State<MyApp> {
+//   // This widget is the root of your application.
+//   @override
+//   Widget build(BuildContext context) {
+//     return MultiBlocProvider(
+//       providers: [
+//         BlocProvider(create: (_) => WishlistBloc()..add(LoadWishList())),
+//         BlocProvider(create: (_) => CartBloc()..add(LoadCart())),
+//         BlocProvider(
+//             create: (_) => CategoryBloc(
+//                   categoryRepository: CategoryRepository(),
+//                 )..add(LoadCategories()))
+//       ],
+//       child: MaterialApp(
+//         //title: 'Our Pharmacy',
+//         debugShowCheckedModeBanner: false,
+//         onGenerateRoute: AppRouter.onGenerateRoute,
+//         initialRoute: SplashScreen.routeName,
+//         //home: RegisterScreen(),
+//       ),
+//     );
+//   }
+// }

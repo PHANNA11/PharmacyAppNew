@@ -81,7 +81,7 @@ class _ProductScreenState extends State<ProductScreen> {
                       SnackBar(content: Text('Added to your WishList!'));
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 },
-                icon: Icon(
+                icon: const Icon(
                   Icons.favorite,
                   color: Colors.red,
                 ),

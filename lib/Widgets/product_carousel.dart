@@ -12,7 +12,7 @@ import '../controller/product/get_image_firebase_controller.dart';
 import '../model/model.dart';
 
 class ProductCarousel extends StatefulWidget {
-  final List<Product> products;
+  // final List<Product> products;
   //final Product product;
   final double widthFactor;
   final double leftPosition;
@@ -24,7 +24,7 @@ class ProductCarousel extends StatefulWidget {
     this.widthFactor = 2.5,
     this.leftPosition = 5.0,
     this.isWishList = false,
-    required this.products,
+    // required this.products,
   }) : super(key: key);
 
   @override
@@ -44,11 +44,12 @@ class _ProductCarouselState extends State<ProductCarousel> {
             }));
   }
 
+  var fireInit;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getAllProducts();
+    fireInit = getAllProducts();
     print(docId);
   }
 
@@ -57,103 +58,61 @@ class _ProductCarouselState extends State<ProductCarousel> {
     final double widthValue =
         MediaQuery.of(context).size.width / widget.widthFactor;
     return SizedBox(
-      height: 200,
-      child: ListView.builder(
-        shrinkWrap: true,
-        padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-        scrollDirection: Axis.horizontal,
-        itemCount: docId.length,
-        itemBuilder: (context, index) {
-          return InkWell(
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        ProductScreen(product: Product.products[index]),
-                  ));
-            },
-            child: Stack(
-              children: [
-                Container(
-                  width: widthValue + 70,
-                  height: widthValue + 80,
-                  decoration: BoxDecoration(
-                    color: Colors.white10,
-                    borderRadius: new BorderRadius.only(
-                      topLeft: const Radius.circular(15.0),
-                      topRight: const Radius.circular(15.0),
-                    ),
-                  ),
-                  margin: EdgeInsets.all(10),
-                  child: GetImagePage(documentId: docId[index]),
+        height: 200,
+        child: FutureBuilder(
+          future: fireInit,
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return const Center(
+                child: Icon(
+                  Icons.info,
+                  size: 30,
+                  color: Colors.red,
                 ),
-                Positioned(
-                  top: 118,
-                  left: widget.leftPosition + 5,
-                  child: Container(
-                    width: 227,
-                    // width: widthValue - 10 - widget.leftPosition,
-                    height: 50,
-                    decoration:
-                        BoxDecoration(color: Colors.black.withAlpha(50)),
-                    child: Row(
-                      children: [
-                        BlocBuilder<CartBloc, CartState>(
-                          builder: (context, state) {
-                            if (state is CartLoading) {
-                              return Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            }
-                            if (state is CartLoaded) {
-                              return Expanded(
-                                child: IconButton(
-                                  onPressed: () {
-                                    final snackBar = SnackBar(
-                                        content: Text('ADD TO YOUR CART'));
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(snackBar);
-                                    // context
-                                    //     .read<CartBloc>()
-                                    //     .add(AddProduct(widget.product),);
-                                  },
-                                  icon: Icon(Icons.add_circle),
-                                  color: Colors.white,
-                                ),
-                              );
-                            } else {
-                              return Text('Something went wrong');
-                            }
-                          },
+              );
+            }
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            return ListView.builder(
+              shrinkWrap: true,
+              padding:
+                  const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+              scrollDirection: Axis.horizontal,
+              itemCount: docId.length,
+              itemBuilder: (context, index) {
+                return InkWell(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              ProductScreen(product: Product.products[index]),
+                        ));
+                  },
+                  child: Stack(
+                    children: [
+                      Container(
+                        width: widthValue + 70,
+                        height: widthValue + 80,
+                        decoration: const BoxDecoration(
+                          color: Colors.white10,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(15.0),
+                            topRight: Radius.circular(15.0),
+                          ),
                         ),
-                        widget.isWishList
-                            ? Expanded(
-                                child: IconButton(
-                                  onPressed: () {
-                                    final snackBar = SnackBar(
-                                        content:
-                                            Text('REMOVE FROM YOUR WISHLIST'));
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(snackBar);
-                                    // context.read<WishlistBloc>().add(
-                                    //     (RemoveProductFromWishList(
-                                    //         widget.product)));
-                                  },
-                                  icon: Icon(Icons.delete),
-                                  color: Colors.white,
-                                ),
-                              )
-                            : SizedBox(),
-                      ],
-                    ),
+                        margin: const EdgeInsets.all(10),
+                        child: GetImagePage(documentId: docId[index]),
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
+                );
+              },
+            );
+          },
+        ));
   }
 }
